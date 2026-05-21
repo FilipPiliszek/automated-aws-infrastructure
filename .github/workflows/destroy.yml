@@ -1,0 +1,30 @@
+name: "Destroy infrastructure"
+on:
+    workflow_dispatch:
+jobs:
+    terraform:
+        name: "Destroy"
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v6
+
+            - name: Setup AWS
+              uses: aws-actions/configure-aws-credentials@v6
+              with:
+                  aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+                  aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+                  aws-region: eu-central-1
+
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v4
+              with:
+                  terraform_version: "1.15.4"
+
+            - name: Terraform Init
+              run: terraform init
+
+            - name: Terraform Destroy
+              run: terraform destroy --auto-approve
+
