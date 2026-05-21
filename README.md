@@ -5,26 +5,26 @@ Fully automated AWS infrastructure provisioning using **Terraform** and **GitHub
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────┐
-│                     AWS (eu-central-1)          │
-│                                                 │
-│  ┌─────────── VPC (10.0.0.0/16) ─────────────┐ │
-│  │                                             │ │
-│  │  ┌──── Public Subnet (10.0.1.0/24) ─────┐  │ │
-│  │  │                                       │  │ │
-│  │  │   ┌─────────────────────────────┐     │  │ │
-│  │  │   │   EC2 (Amazon Linux 2023)   │     │  │ │
-│  │  │   │   t2.micro · Nginx          │     │  │ │
-│  │  │   └─────────────────────────────┘     │  │ │
-│  │  │                                       │  │ │
-│  │  └───────────────────────────────────────┘  │ │
-│  │                                             │ │
-│  │  Internet Gateway ←→ Route Table            │ │
-│  └─────────────────────────────────────────────┘ │
-│                                                 │
-│  Security Group: inbound 80/tcp, outbound all   │
-│  S3 Backend: remote state storage               │
-└─────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────┐
+│                     AWS (eu-central-1)                │
+│                                                       │
+│  ┌─────────────── VPC (10.0.0.0/16) ───────────────┐  │
+│  │                                                 │  │
+│  │  ┌───── Public Subnet (10.0.1.0/24) ─────────┐  │  │
+│  │  │                                           │  │  │
+│  │  │   ┌─────────────────────────────┐         │  │  │
+│  │  │   │   EC2 (Amazon Linux 2023)   │         │  │  │
+│  │  │   │   t3.micro · Nginx          │         │  │  │
+│  │  │   └─────────────────────────────┘         │  │  │
+│  │  │                                           │  │  │
+│  │  └───────────────────────────────────────────┘  │  │
+│  │                                                 │  │
+│  │  Internet Gateway ←→ Route Table                │  │
+│  └─────────────────────────────────────────────────┘  │
+│                                                       │
+│  Security Group: inbound 80/tcp, outbound all         │
+│  S3 Backend: remote state storage                     │
+└───────────────────────────────────────────────────────┘
 ```
 
 ## Resources Created
@@ -36,7 +36,7 @@ Fully automated AWS infrastructure provisioning using **Terraform** and **GitHub
 | **Internet Gateway** | Enables internet access for the VPC |
 | **Route Table** | Routes all traffic (`0.0.0.0/0`) through the internet gateway |
 | **Security Group** | Allows inbound HTTP (port 80) and all outbound traffic |
-| **EC2 Instance** | Amazon Linux 2023 (`t2.micro`) with Nginx installed via user data |
+| **EC2 Instance** | Amazon Linux 2023 (`t3.micro`) with Nginx installed via user data |
 
 ## CI/CD Workflows
 
@@ -60,7 +60,7 @@ Triggered manually via **workflow_dispatch**. Runs `terraform init` → `destroy
 | Variable | Description | Default |
 |---|---|---|
 | `region` | AWS region | `eu-central-1` |
-| `instance_type` | EC2 instance type | `t2.micro` |
+| `instance_type` | EC2 instance type | `t3.micro` |
 
 ## Outputs
 
@@ -75,6 +75,7 @@ Triggered manually via **workflow_dispatch**. Runs `terraform init` → `destroy
 ├── .github/workflows/
 │   ├── build.yml           # CI/CD: plan & apply on push to main
 │   └── destroy.yml         # Manual: destroy all infrastructure
+├── docs/                   # Screenshots & documentation images
 ├── scripts/
 │   └── install_nginx.sh    # EC2 user data script
 ├── main.tf                 # VPC, subnet, SG, EC2 resources
@@ -89,3 +90,14 @@ Triggered manually via **workflow_dispatch**. Runs `terraform init` → `destroy
 - **Terraform** `1.15.4`
 - **AWS Provider** `~> 5.0`
 - **GitHub Actions** with `actions/checkout@v6`, `aws-actions/configure-aws-credentials@v6`, `hashicorp/setup-terraform@v4`
+
+## 📸 Screenshots
+
+### 1. Fully Automated CI/CD Pipeline
+![GitHub Actions Success](docs/Passed%20Test.png)
+
+### 2. Live Application (Nginx)
+![Nginx in Browser](docs/Nginx%20Welcome%20Page.png)
+
+### 3. Remote Backend (Terraform State in S3)
+![S3 Backend](docs/tfstate%20File.png)
