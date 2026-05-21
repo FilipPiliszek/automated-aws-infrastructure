@@ -61,7 +61,7 @@ resource "aws_instance" "web_server" {
   subnet_id              = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.web_sg.id]
 
-  user_data = file("${path.module}scripts/install_nginx.sh") #${path.module} = szukaj pliku w tym katalogu w ktorym jest main.tf
+  user_data = file("${path.module}/scripts/install_nginx.sh") #${path.module} = szukaj pliku w tym katalogu w ktorym jest main.tf
   tags = {
     Name = "Nginx web server"
   }
